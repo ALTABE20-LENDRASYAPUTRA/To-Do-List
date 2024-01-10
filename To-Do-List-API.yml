@@ -1,0 +1,693 @@
+openapi: '3.0.2'
+info:
+  description: |
+    Ini Adalah Dokumentasi To-Do-List API
+  version: "1.0.0"
+  title: To-Do-List
+  contact:
+    email: l3nteam@gmail.com
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: Local
+    url: 'http://localhost:8000'
+  - description: ToDo
+    url: https://todolist
+tags:
+  - name: User
+    description: API user
+  - name: Project
+    description: API project
+  - name: Task
+    description: API task
+paths:
+  /users:
+    post:
+      tags:
+        - User
+      summary: Create user
+      description: This can only be done by the logged in user.
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        description: Created user object
+        required: true
+      responses:
+        '200':
+          description: successful createUser
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Error createUser
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse400'
+    get:
+      tags:
+        - User
+      summary: Get user profil
+      operationId: getUserById
+      security:
+        - jwt_auth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid userid supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse400'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse404'
+    put:
+      tags:
+        - User
+      summary: Updated user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      security:
+        - jwt_auth: []
+      responses:
+        '200':
+          description: succes update user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid userid supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse400'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse404'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        description: Updated user object
+        required: true
+    delete:
+      tags:
+        - User
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      security:
+        - jwt_auth: []
+      responses:
+        '200':
+          description: succes delete user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid userid supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse400'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse404'
+  /login:
+    post:
+      tags:
+        - User
+      summary: Logs user into the system
+      operationId: loginUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Invalid userid supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse400'
+  /projects:
+    post:
+      tags:
+        - Project
+      summary: Create project
+      description: This can only be done by the logged in user.
+      operationId: createProject
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: successful createProject
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Error create Project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse400'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+        description: Created project object
+        required: true
+    get:
+      tags:
+        - Project
+      summary: Get all projects
+      operationId: getAllProjects
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '404':
+          description: project not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse404'
+  /projects/{projectid}:
+    get:
+      tags:
+        - Project
+      summary: Get project details by ID
+      operationId: getProjectById
+      parameters:
+        - name: projectid
+          in: path
+          description: The ID of the project to retrieve
+          required: true
+          schema:
+            type: integer
+            format: int64
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ProjectResponse'
+        '400':
+          description: Invalid projectid supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse400'
+        '404':
+          description: project not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse404'
+    put:
+      tags:
+        - Project
+      summary: Update project by ID
+      description: This can only be done by the owner of the project.
+      operationId: updateProjectById
+      parameters:
+        - name: projectid
+          in: path
+          description: The ID of the project to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: succes update project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid projectid supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse400'
+        '404':
+          description: Project not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse404'
+        '403':
+          description: User does not have permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse403'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+        description: Updated project object
+        required: true
+    delete:
+      tags:
+        - Project
+      summary: Delete project by ID
+      description: This can only be done by the owner of the project.
+      operationId: deleteProjectById
+      parameters:
+        - name: projectid
+          in: path
+          description: The ID of the project to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: succes delete project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid project supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse400'
+        '404':
+          description: Project not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse404'
+        '403':
+          description: User does not have permission to delete this project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse403'
+  /tasks:
+    post:
+      tags:
+        - Task
+      summary: Create task
+      description: This can only be done by the logged in user.
+      operationId: createTask
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: successful create Task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Error create Task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse400'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+        description: Created task object
+        required: true
+  /tasks/{taskid}:
+    delete:
+      tags:
+        - Task
+      summary: Delete task by ID
+      description: This can only be done by the owner of the task.
+      operationId: deleteTaskById
+      parameters:
+        - name: taskid
+          in: path
+          description: The ID of the task to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: succes delete task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid taskid supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse400'
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse404'
+        '403':
+          description: User does not have permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse403'
+    put:
+      tags:
+        - Task
+      summary: Update task by ID
+      description: This can only be done by the owner of the task.
+      operationId: updateTaskById
+      parameters:
+        - name: taskid
+          in: path
+          description: The ID of the task to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: succes update task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid taskid supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse400'
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse404'
+        '403':
+          description: User does not have permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse403'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutTask'
+        description: Updated task object
+        required: true
+
+
+
+components:
+  schemas:
+    ErrorResponse400:
+        type: object
+        properties:
+          message:
+            type: string
+          error:
+            type: string
+        required:
+          - message
+          - error
+        example:
+          message: "Bad Request"
+          error: "Invalid request payload"
+    DataResponse:
+        type: object
+        properties:
+          data:
+            type: object
+        required:
+          - data
+        example:
+          data: {}
+    ErrorResponse404:
+        type: object
+        properties:
+          message:
+            type: string
+          error:
+            type: string
+        required:
+          - message
+          - error
+        example:
+          message: "Not Found"
+          error: "Resource not found"
+    ErrorResponse403:
+        type: object
+        properties:
+          message:
+            type: string
+          error:
+            type: string
+        required:
+          - message
+          - error
+        example:
+          message: "Forbidden"
+          error: "User does not have permission"
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        address:
+          type: string
+        phone_number:
+          type: string
+        role:
+          type: string
+      example:
+        name: Lendra
+        email: l3nteam@gmail.com
+        password: lendra123
+        address: jakarta, City
+        phone_number: 082289893422
+        role: user
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        data:
+          type: object
+      required:
+        - message
+      example:
+        message: "Operation successful"
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        error:
+          type: string
+      required:
+        - message
+        - error
+      example:
+        message: "Operation failed"
+        error: "Detailed error message"
+    GetResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        address:
+          type: string
+        phone_number:
+          type: string
+        role:
+          type: string
+      example:
+        name: Lendra
+        email: l3nteam@gmail.com
+        address: jakarta, City
+        phone_number: 082289893422
+        role: admin
+    LoginResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        name:
+          type: string
+        token:
+          type: string
+      example:
+        message: Success Login
+        name: Lendra
+        token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    Project:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        user_id:
+          type: integer
+      example:
+        name: Project X
+        description: project sample
+        user_id: 1
+    ProjectResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        user_id:
+          type: integer
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskResponse'
+      example:
+        name: Project X
+        description: This sample project
+        user_id: 1
+        tasks:  
+          - title: Task A
+            description: task deskripsi
+            status: completed
+            project_id: 1
+            user_id: 1
+    Task:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        project_id:
+          type: integer
+          format: int64
+      example:
+        title: Task A
+        description: task deskripsi
+        project_id: 1
+    TaskResponse:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+        project_id:
+          type: integer
+          format: int64
+        user_id:
+          type: integer
+          format: int64
+      example:
+        title: Task A
+        description: task deskripsi
+        status: completed / not completed
+        project_id: 1
+        user_id: 1
+    PutTask:
+      type: object
+      properties:
+        status:
+          type: boolean
+      example:
+        status: true
+    ApiResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        data:
+          type: string
+        code:
+          type: integer
+          format: int32
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
